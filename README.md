@@ -1,2 +1,2 @@
 Change the Database in appsettings.json and
-use postman for better test
+use postman for better testing experience.
