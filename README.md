@@ -1,2 +1,2 @@
-Change the Database in appsettings.json \n
-Use postman for better test
+Change the Database in appsettings.json and
+use postman for better test
