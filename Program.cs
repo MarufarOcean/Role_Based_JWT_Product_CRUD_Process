@@ -1,4 +1,4 @@
-using CRUD_Process.DBContext;
+﻿using CRUD_Process.DBContext;
 using CRUD_Process.Repository;
 using CRUD_Process.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +31,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Add CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // Angular App URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Enable Authorization
 builder.Services.AddAuthorization();
 
@@ -47,6 +59,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable CORS
+app.UseCors("AllowAngularApp");  // Enable Cors policy
 
 app.UseHttpsRedirection();
 
