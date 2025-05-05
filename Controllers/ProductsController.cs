@@ -24,15 +24,24 @@ namespace CRUD_Process.Controllers
             return Ok(products);
         }
 
+        //[Authorize(Roles = "Admin")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductsById(int id)
+        {
+            var product = await _productRepository.GetById(id);
+            return Ok(product);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
             await _productRepository.Add(product);
-            return Ok("Product added successfully");
+            return Ok();
+            
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
@@ -42,9 +51,10 @@ namespace CRUD_Process.Controllers
             existingProduct.Name = product.Name;
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
+            existingProduct.stock = product.stock;
 
             await _productRepository.Update(existingProduct);
-            return Ok("Product updated successfully");
+            return Ok(existingProduct);
         }
 
         [Authorize(Roles = "Admin")]
@@ -52,7 +62,7 @@ namespace CRUD_Process.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             await _productRepository.Delete(id);
-            return Ok("Product deleted successfully");
+            return Ok();
         }
     }
 }

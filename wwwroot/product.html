@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Products</title>
+</head>
+<body>
+    <h2>Product List</h2>
+    <button onclick="logout()">Logout</button>
+    <div id="productList"></div>
+
+    <div id="adminSection" style="display: none;">
+        <h3>Add Product</h3>
+        <input type="text" id="name" placeholder="Name" />
+        <input type="number" id="price" placeholder="Price" />
+        <button onclick="addProduct()">Add</button>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

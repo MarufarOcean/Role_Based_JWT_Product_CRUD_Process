@@ -43,6 +43,16 @@ builder.Services.AddCors(options =>
         });
 });
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", policy =>
+//    {
+//        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+//    });
+//});
+
+
+
 // Enable Authorization
 builder.Services.AddAuthorization();
 
@@ -52,6 +62,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+//app.UseCors("AllowAll");
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
