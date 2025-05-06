@@ -38,7 +38,7 @@ namespace CRUD_Process.Controllers
             };
 
             await _userRepository.Add(newUser);
-            return Ok("User registered successfully");
+            return Ok();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace CRUD_Process.Controllers
                 return Unauthorized("Invalid credentials");
 
             var token = _authService.GenerateJwtToken(user);
-            return Ok(new { Token = token });
+            return Ok(new { Token = token, UserRole = user.Role });
         }
     }
 }
