@@ -32,7 +32,7 @@ namespace CRUD_Process.Controllers
             return Ok(product);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
@@ -57,7 +57,7 @@ namespace CRUD_Process.Controllers
             return Ok(existingProduct);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
