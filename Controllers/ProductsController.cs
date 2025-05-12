@@ -34,16 +34,22 @@ namespace CRUD_Process.Controllers
 
         //[Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromForm] Product product, [FromForm] IFormFile photo)
         {
+            if (photo != null)
+            {
+                // Save the photo and set the PhotoUrl property
+                var photoUrl = await SavePhotoAsync(photo);
+                product.PhotoUrl = photoUrl;
+            }
+
             await _productRepository.Add(product);
-            return Ok();
-            
+            return Ok(product);
         }
 
         //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product, [FromForm] IFormFile photo)
         {
             var existingProduct = await _productRepository.GetById(id);
             if (existingProduct == null) return NotFound();
@@ -52,6 +58,14 @@ namespace CRUD_Process.Controllers
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
             existingProduct.stock = product.stock;
+            existingProduct.Details = product.Details;
+
+            if (photo != null)
+            {
+                // Save the new photo and update the PhotoUrl property
+                var photoUrl = await SavePhotoAsync(photo);
+                existingProduct.PhotoUrl = photoUrl;
+            }
 
             await _productRepository.Update(existingProduct);
             return Ok(existingProduct);
@@ -63,6 +77,26 @@ namespace CRUD_Process.Controllers
         {
             await _productRepository.Delete(id);
             return Ok();
+        }
+
+        //save photo to the server
+        private async Task<string> SavePhotoAsync(IFormFile photo)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await photo.CopyToAsync(stream);
+            }
+
+            return $"/photos/{fileName}"; // Return the relative URL
         }
     }
 }
