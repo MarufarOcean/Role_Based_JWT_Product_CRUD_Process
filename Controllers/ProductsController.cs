@@ -1,4 +1,5 @@
-﻿using CRUD_Process.Models;
+﻿using CRUD_Process.DTOs;
+using CRUD_Process.Models;
 using CRUD_Process.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -34,12 +35,20 @@ namespace CRUD_Process.Controllers
 
         //[Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromForm] Product product, [FromForm] IFormFile photo)
+        public async Task<IActionResult> AddProduct([FromForm] ProductInputDto productInput)
         {
-            if (photo != null)
+            var product = new Product
             {
-                // Save the photo and set the PhotoUrl property
-                var photoUrl = await SavePhotoAsync(photo);
+                Name = productInput.Name,
+                Description = productInput.Description,
+                Details = productInput.Details,
+                Price = productInput.Price,
+                stock = productInput.stock
+            };
+
+            if (productInput.Photo != null)
+            {
+                var photoUrl = await SavePhotoAsync(productInput.Photo);
                 product.PhotoUrl = photoUrl;
             }
 
@@ -49,21 +58,20 @@ namespace CRUD_Process.Controllers
 
         //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product, [FromForm] IFormFile photo)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductInputDto productInput)
         {
             var existingProduct = await _productRepository.GetById(id);
             if (existingProduct == null) return NotFound();
 
-            existingProduct.Name = product.Name;
-            existingProduct.Description = product.Description;
-            existingProduct.Price = product.Price;
-            existingProduct.stock = product.stock;
-            existingProduct.Details = product.Details;
+            existingProduct.Name = productInput.Name;
+            existingProduct.Description = productInput.Description;
+            existingProduct.Price = productInput.Price;
+            existingProduct.stock = productInput.stock;
+            existingProduct.Details = productInput.Details;
 
-            if (photo != null)
+            if (productInput.Photo != null)
             {
-                // Save the new photo and update the PhotoUrl property
-                var photoUrl = await SavePhotoAsync(photo);
+                var photoUrl = await SavePhotoAsync(productInput.Photo);
                 existingProduct.PhotoUrl = photoUrl;
             }
 
