@@ -30,6 +30,21 @@ namespace CRUD_Process.Controllers
         public async Task<IActionResult> GetProductsById(int id)
         {
             var product = await _productRepository.GetById(id);
+            if (product == null) return NotFound();
+
+            // Read the photo file and convert it to a Base64 string
+            string base64Photo = null;
+            if (!string.IsNullOrEmpty(product.PhotoUrl))
+            {
+                var photoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.PhotoUrl.TrimStart('/'));
+                if (System.IO.File.Exists(photoPath))
+                {
+                    var photoBytes = await System.IO.File.ReadAllBytesAsync(photoPath);
+                    base64Photo = Convert.ToBase64String(photoBytes);
+                    product.PhotoUrl = base64Photo;
+                }
+            }
+
             return Ok(product);
         }
 
