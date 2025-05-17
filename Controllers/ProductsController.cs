@@ -22,6 +22,20 @@ namespace CRUD_Process.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _productRepository.GetAll();
+
+            foreach (var product in products)
+            {
+                if (!string.IsNullOrEmpty(product.PhotoUrl))
+                {
+                    var photoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.PhotoUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(photoPath))
+                    {
+                        var photoBytes = await System.IO.File.ReadAllBytesAsync(photoPath);
+                        product.PhotoUrl = Convert.ToBase64String(photoBytes);
+                    }
+                }
+            }
+
             return Ok(products);
         }
 
