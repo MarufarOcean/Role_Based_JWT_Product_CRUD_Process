@@ -34,14 +34,13 @@ namespace CRUD_Process.Repository
             if (stock < order.Quantity)
                 throw new Exception("Not enough stock available for the selected product.");
 
-            // ✅ Stock থেকে Quantity বাদ দাও
+            // stock updated
 
             stock -= order.Quantity;
             product.stock = stock.ToString();
             // Product entity 'modified'
             _context.Products.Update(product);
-
-            // ✅ অর্ডারের প্রোডাক্ট রেফারেন্স সেট করো
+            
             order.Product = product;
             order.OrderDate = DateTime.Now;
 
