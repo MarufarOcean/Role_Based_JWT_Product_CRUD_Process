@@ -9,5 +9,6 @@
         public decimal Price { get; set; }
         public string stock { get; set; }
         public string PhotoUrl { get; set; }
+        public ICollection<SupplierProduct> SupplierProducts { get; set; }
     }
 }
