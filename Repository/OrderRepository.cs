@@ -49,5 +49,60 @@ namespace CRUD_Process.Repository
 
             return order;
         }
+        public async Task<Order> UpdateOrderAsync(Order order)
+        {
+            var existingOrder = await _context.Orders.Include(o => o.Product).FirstOrDefaultAsync(o => o.Id == order.Id);
+            if (existingOrder == null)
+                throw new Exception("Order not found.");
+
+            var product = await _context.Products.FindAsync(order.ProductId);
+            if (product == null)
+                throw new Exception("Invalid Product ID.");
+
+            // Restore stock from previous order
+            var oldProduct = await _context.Products.FindAsync(existingOrder.ProductId);
+            if (oldProduct != null)
+            {
+                oldProduct.stock = (Convert.ToInt32(oldProduct.stock) + existingOrder.Quantity).ToString();
+                _context.Products.Update(oldProduct);
+            }
+
+            // Check new stock availability
+            var newStock = Convert.ToInt32(product.stock);
+            if (newStock < order.Quantity)
+                throw new Exception("Not enough stock available for the selected product.");
+
+            // Deduct new quantity
+            product.stock = (newStock - order.Quantity).ToString();
+            _context.Products.Update(product);
+
+            // Update order fields
+            existingOrder.ProductId = order.ProductId;
+            existingOrder.Quantity = order.Quantity;
+            existingOrder.OrderDate = order.OrderDate;
+            existingOrder.Product = product;
+
+            _context.Orders.Update(existingOrder);
+            await _context.SaveChangesAsync();
+
+            return existingOrder;
+        }
+        public async Task DeleteOrderAsync(int id)
+        {
+            var order = await _context.Orders.Include(o => o.Product).FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null)
+                throw new Exception("Order not found.");
+
+            // Restore stock
+            var product = await _context.Products.FindAsync(order.ProductId);
+            if (product != null)
+            {
+                product.stock = (Convert.ToInt32(product.stock) + order.Quantity).ToString();
+                _context.Products.Update(product);
+            }
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
     }
 }

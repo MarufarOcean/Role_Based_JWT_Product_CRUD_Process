@@ -43,5 +43,41 @@ namespace CRUD_Process.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderCreateDto orderDto)
+        {
+            try
+            {
+                var updatedOrder = new Order
+                {
+                    Id = id,
+                    ProductId = orderDto.ProductId,
+                    Quantity = orderDto.Quantity,
+                    OrderDate = DateTime.Now // Or keep the original date if needed
+                };
+
+                var result = await _orderRepo.UpdateOrderAsync(updatedOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            try
+            {
+                await _orderRepo.DeleteOrderAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }   

@@ -7,5 +7,8 @@ namespace CRUD_Process.Repository
         Task<IEnumerable<Order>> GetAllOrdersAsync();
         Task<Order> GetOrderByIdAsync(int id);
         Task<Order> CreateOrderAsync(Order order);
+        Task<Order> UpdateOrderAsync(Order order);
+        Task DeleteOrderAsync(int id);
+
     }
 }
